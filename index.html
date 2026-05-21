@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChvoiceLink</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.0/lame.min.js"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body class="min-h-screen bg-slate-950 text-slate-100">
+    <div class="mx-auto max-w-2xl px-4 py-8">
+      <header class="mb-6">
+        <h1 class="text-2xl font-semibold tracking-tight">ChvoiceLink</h1>
+        <p class="mt-1 text-sm text-slate-300">
+          Record, upload, and share a voice link with smart expiry.
+        </p>
+      </header>
+
+      <main id="app" class="space-y-6"></main>
+
+      <footer class="pt-10 text-xs text-slate-400">
+        <p>
+          Note: This page only uses Firestore collection
+          <code class="text-slate-200">recordings</code>. It does not touch your
+          existing collections
+          <code class="text-slate-200">reservations</code>,
+          <code class="text-slate-200">socialLinks</code>,
+          <code class="text-slate-200">starCounters</code>,
+          <code class="text-slate-200">studentLogs</code>.
+        </p>
+      </footer>
+    </div>
+
+    <script type="module">
+      const loadScript = (src) =>
+        new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = src;
+          s.async = true;
+          s.onload = () => resolve();
+          s.onerror = () => reject(new Error(`Failed to load ${src}`));
+          document.head.appendChild(s);
+        });
+
+      // Prefer `env.js` (GitHub Pages + optional local), fall back to `env.php` for XAMPP local.
+      const host = location.hostname;
+      const isLocalhost =
+        host === "localhost" ||
+        host === "127.0.0.1" ||
+        host === "::1" ||
+        host.endsWith(".localhost");
+      const looksLikeXamppPath = location.pathname.includes("/GithubProject/");
+      const preferPhpEnv = isLocalhost || looksLikeXamppPath;
+
+      // Avoid noisy 404 in local Apache/XAMPP by loading env.php first on localhost.
+      if (preferPhpEnv) {
+        await loadScript("./env.php");
+      } else {
+        await loadScript("./env.js");
+      }
+
+      await import("./src/main.js");
+    </script>
+  </body>
+</html>

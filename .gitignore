@@ -1,0 +1,11 @@
+# Local-only Firebase config (generated in CI)
+src/firebase.config.js
+
+# Local env
+.env
+
+# Generated runtime config
+env.js
+
+# Local-only helper output (served dynamically but keep out of repo if you want)
+# env.php is committed (safe), it does not contain secrets
