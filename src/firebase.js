@@ -19,3 +19,4 @@ const bucketName = (() => {
   return b;
 })();
 export const storage = getStorage(app, `gs://${bucketName}`);
+
