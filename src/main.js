@@ -263,7 +263,17 @@ async function renderRecordMode() {
           contentType: "audio/mpeg",
         });
 
+        const uploadTimeoutMs = 45_000;
         await new Promise((resolve, reject) => {
+          const timer = setTimeout(() => {
+            try {
+              task.cancel();
+            } catch {
+              // ignore
+            }
+            reject(new Error(`Upload timed out after ${uploadTimeoutMs / 1000}s`));
+          }, uploadTimeoutMs);
+
           task.on(
             "state_changed",
             (snap) => {
@@ -272,8 +282,14 @@ async function renderRecordMode() {
                 : 0;
               status.textContent = `Uploading… ${pct}%`;
             },
-            (err) => reject(err),
-            () => resolve(),
+            (err) => {
+              clearTimeout(timer);
+              reject(err);
+            },
+            () => {
+              clearTimeout(timer);
+              resolve();
+            },
           );
         });
 
@@ -332,6 +348,7 @@ async function renderRecordMode() {
         debugBox.textContent = [
           `docId: ${lastDocId ?? "—"}`,
           `storagePath: ${lastStoragePath ?? "—"}`,
+          `origin: ${location.origin}`,
           `errorCode: ${e?.code ?? "—"}`,
           `errorMessage: ${e?.message ?? String(e)}`,
         ].join("\n");

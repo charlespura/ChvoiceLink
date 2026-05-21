@@ -46,6 +46,11 @@ This repo ignores `env.js` and `.env`.
 - For local dev: fill `.env`, then run `node scripts/gen-firebase-config.mjs` to generate `env.js`.
 - For GitHub Pages: `.github/workflows/deploy.yml` generates `env.js` from GitHub repo secrets.
 
+If GitHub Pages shows **Uploading…** forever, first confirm:
+
+- Repo → Actions → last “Deploy to GitHub Pages” run: step “Generate Firebase config (from secrets)” succeeded
+- Repo → Settings → Secrets and variables → Actions: all `FIREBASE_*` secrets are set
+
 Secrets to add in GitHub repo settings:
 
 - `FIREBASE_API_KEY`
@@ -55,6 +60,25 @@ Secrets to add in GitHub repo settings:
 - `FIREBASE_MESSAGING_SENDER_ID`
 - `FIREBASE_APP_ID`
 - `FIREBASE_MEASUREMENT_ID`
+
+## Firebase Storage rules (required)
+
+If upload gets stuck or fails with permission errors, your Storage rules likely require auth.
+For a public voice-sharing demo, start with:
+
+```txt
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /recordings/{fileName} {
+      allow read: if true;
+      allow write: if request.resource != null
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType == "audio/mpeg";
+    }
+  }
+}
+```
 
 ## Share links
 
